@@ -5,3 +5,12 @@
     background-color: #e0e0e0;
     margin-left: calc(-1 * var(--bs-gutter-x) * 0.5);
 }
+
+.menu-sidenav {
+    width: 100%;
+}
+
+.menu-sidenav .nav-link.active, .nav-pills .show>.nav-link {
+    background-color: #d5d5d5 !important;
+    color: #202020 !important;
+}
