@@ -1,0 +1,311 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable, signal } from '@angular/core';
+import { Observable, map, of } from 'rxjs';
+import { IntervalWin, IntervalWinParams, IntervalWinProducer } from '../models/interval-win.model';
+import { Movie, MovieByYearParams, MoviePageResponse, MovieQueryParams } from '../models/movie.model';
+import { Studios, StudiosParams } from '../models/studios.model';
+import { Years, YearsParams } from '../models/years.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class MoviesMockService {
+
+  private movies = signal<Movie[]>([]);
+  
+  constructor(private http: HttpClient) {}
+
+  // Ler o arquivo CSV dos assets
+  readCsvFile(): Observable<Movie[]> {
+    return this.http.get('assets/mock/movielist.csv', { responseType: 'text' })
+      .pipe(
+        map(csvText => {
+          const movies = this.parseCsv(csvText);
+          this.movies.set(movies);
+          return movies;
+        })
+      );
+  }
+
+  // Parsear o texto CSV para array de objetos tipados
+  private parseCsv(csvText: string): Movie[] {
+    const lines = csvText.split('\n').filter(line => line.trim() !== '');
+    if (lines.length === 0) return [];
+
+    let id = 1;
+    const headers = lines[0].split(';').map(header => header.trim());
+    const data = lines.slice(1).map(line => {
+      const movie: any = {};
+      const values = line.split(';').map(value => value.trim());
+
+      movie['id'] = id++;
+      
+      headers.forEach((header, index) => {
+        const value = values[index] || '';
+        // Converter tipos baseado no header
+        switch (header) {
+          case 'year':
+            movie[header] = parseInt(value) || 0;
+            break;
+            case 'winner':
+              movie[header] = value.toLowerCase() === 'yes';
+              break;
+              default:
+            movie[header] = value;
+          }
+        });
+      return movie as Movie;
+    });
+
+    return data;
+  }
+
+  // Método privado para aplicar filtros
+  private applyFilters(movies: Movie[], params: MovieQueryParams): Movie[] {
+    let filtered = [...movies];
+
+    if (params.winner !== undefined) {
+      filtered = filtered.filter(movie => movie.winner === params.winner);
+    }
+
+    if (params.year !== undefined) {
+      filtered = filtered.filter(movie => movie.year === params.year);
+    }
+
+    if (params.title) {
+      filtered = filtered.filter(movie => 
+        movie.title.toLowerCase().includes(params.title!.toLowerCase())
+      );
+    }
+
+    if (params.studios) {
+      filtered = filtered.filter(movie => 
+        movie.studios.toLowerCase().includes(params.studios!.toLowerCase())
+      );
+    }
+
+    if (params.producers) {
+      filtered = filtered.filter(movie => 
+        movie.producers.toLowerCase().includes(params.producers!.toLowerCase())
+      );
+    }
+
+    return filtered;
+  }
+
+  // Método para obter filmes com paginação e filtros
+  getMovies(params: MovieQueryParams = {}): Observable<MoviePageResponse> {
+    return of(this.movies()).pipe(
+      map(movies => {
+        // Aplicar filtros
+        let filteredMovies = this.applyFilters(movies, params);
+        
+        // Aplicar paginação
+        const page = params.page || 0;
+        const size = params.size || 10;
+        const totalElements = filteredMovies.length;
+        const totalPages = Math.ceil(totalElements / size);
+        
+        // Validar se a página solicitada existe
+        const validPage = Math.min(page, Math.max(0, totalPages - 1));
+        const startIndex = validPage * size;
+        const endIndex = Math.min(startIndex + size, totalElements);
+        
+        // Garantir que não tentamos acessar índices fora do array
+        const content = filteredMovies.slice(startIndex, endIndex);
+
+        if (!content?.length) {
+          return {
+            content: [],
+            pageable: {
+              sort: { sorted: false, unsorted: true },
+              pageSize: size,
+              pageNumber: validPage,
+              offset: startIndex,
+              paged: totalElements > 0,
+              unpaged: totalElements === 0
+            },
+            totalElements: 0,
+            last: true,
+            totalPages: 0,
+            first: true,
+            sort: { sorted: false, unsorted: true },
+            number: validPage,
+            numberOfElements: 0,
+            size
+          };
+        }
+        
+        return {
+          content: content.map(movie => ({
+            year: movie.year,
+            title: movie.title,
+            studios: movie.studios?.split(/,|\s+and\s+/)?.map((studio) => studio.trim()),
+            producers: movie.producers?.split(/,|\s+and\s+/)?.map((producer) => producer.trim()),
+            winner: movie.winner
+          })),
+          pageable: {
+            sort: { sorted: false, unsorted: true },
+            pageSize: size,
+            pageNumber: validPage,
+            offset: startIndex,
+            paged: totalElements > 0,
+            unpaged: totalElements === 0
+          },
+          totalElements,
+          last: validPage >= totalPages - 1 || totalElements === 0,
+          totalPages: Math.max(1, totalPages),
+          first: validPage === 0,
+          sort: { sorted: false, unsorted: true },
+          number: validPage,
+          numberOfElements: content.length,
+          size
+        };
+      })
+    );
+  }
+
+  // Método para obter anos com mais de um vencedor
+  getYearsWithMultipleWinners(params: YearsParams): Observable<Years[]> {
+    return of(this.movies()).pipe(
+      map(movies => {
+
+        if (params.projection !== 'years-with-multiple-winners') {
+            throw new Error('Invalid projection');
+        }
+
+        // Agrupar filmes por ano e conta quantos ganhadores tem por ano
+        const groupedByYear = movies.reduce((acc, movie) => {
+            acc[movie.year] = acc[movie.year] || [];
+
+            const splitProducers =  movie.producers?.split(/,|\s+and\s+/)?.map((producer) => producer.trim());
+            for (const producer of splitProducers) {
+              acc[movie.year].push(producer);
+            }
+
+            return acc;
+        }, {} as Record<number, string[]>);
+        
+        return Object.entries(groupedByYear).map(([year, producers]) => ({
+            year: parseInt(year),
+            winnerCount: producers.length
+        }));
+      })
+    )
+  }
+
+  // Método para obter estúdios
+  getStudios(params: StudiosParams): Observable<Studios> {
+    return of(this.movies()).pipe(
+      map(movies => {
+        if (params.projection !== 'studios-with-win-count') {
+          throw new Error('Invalid projection');
+        }
+
+        const groupedByStudio = movies.reduce((acc, movie) => {
+            const splitStudios = movie.studios?.split(/,|\s+and\s+/)?.map((studio) => studio.trim());
+            for (const studio of splitStudios) {
+                acc[studio] = acc[studio] || [];
+                acc[studio].push(movie.year);
+            }
+            return acc;
+        }, {} as Record<string, number[]>);
+
+        return {
+          studios: Object.entries(groupedByStudio).map(([studio, years]) => ({
+            name: studio,
+            winCount: years.length
+          }))
+        };
+      })
+    )
+  }
+
+  // Método para obter o intervalo de prêmios
+  getIntervalWin(params: IntervalWinParams): Observable<IntervalWin> {
+    return of(this.movies()).pipe(
+      map(movies => {
+        if (params.projection !== 'max-min-win-interval-for-producer') {
+          throw new Error('Invalid projection');
+        }
+
+        const movieWinners = movies.filter(movie => movie.winner).sort((a, b) => a.year - b.year);
+
+        const producers = new Map<string, number[]>();
+
+        // Criar uma lista única de produtores e adiciona os anos
+        for (const movie of movieWinners) {
+          // Quebra a lista de produtores por vírgula ou " and "
+          const producersList = movie.producers?.split(/,|\s+and\s+/)?.map((producer) => producer.trim());
+
+          for (const producer of producersList) {
+            if (!producers.has(producer)) {
+              producers.set(producer, []);
+            }
+
+            producers.get(producer)?.push(movie.year);
+          }
+        }
+
+        const producerIntervals: IntervalWinProducer[] = [];
+
+        // Calcular intervalos para cada produtor
+        for (const [producer, years] of producers.entries()) {
+          // Ordenar os anos em ordem crescente
+          years.sort((a, b) => a - b);
+
+          // Só calcular intervalos se o produtor ganhou pelo menos 2 vezes
+          if (years.length >= 2) {
+            // Calcular intervalos
+            for (let i = 0; i < years.length - 1; i++) {
+              const previousWin = years[i];
+              const followingWin = years[i + 1];
+              const interval = followingWin - previousWin;
+
+              producerIntervals.push({
+                producer,
+                interval,
+                previousWin,
+                followingWin,
+              });
+            }
+          }
+        }
+
+        // Se não houver intervalos, retorna um array vazio
+        if (producerIntervals.length === 0) {
+          return { min: [], max: [] };
+        }
+
+        // Encontrar o intervalo mínimo e máximo
+        const minInterval = Math.min(...producerIntervals.map((interval) => interval.interval));
+        const maxInterval = Math.max(...producerIntervals.map((interval) => interval.interval));
+
+        // Encontrar os produtores com os intervalos mínimo e máximo
+        const minProducers = producerIntervals.filter((interval) => interval.interval === minInterval);
+        const maxProducers = producerIntervals.filter((interval) => interval.interval === maxInterval);
+
+        return {
+          min: minProducers,
+          max: maxProducers
+        }
+      })
+    )
+  }
+
+  // Método para obter o filme por ano
+  getMovieByYear(params: MovieByYearParams): Observable<Movie[]> {
+    return of(this.movies()).pipe(
+      map(movies => {
+
+        const movie = movies.filter(movie => movie.year === params.year && movie.winner === params.winner);
+
+        if (!movie) {
+          return [];
+        }
+
+        return movie;
+      })
+    )
+  }
+}
