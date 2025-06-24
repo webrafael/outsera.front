@@ -11,5 +11,5 @@ export interface IntervalWinProducer {
 }
 
 export interface IntervalWinParams {
-    projection: 'max-min-win-interval-for-producer';
+    projection: 'max-min-win-interval-for-producers';
 }

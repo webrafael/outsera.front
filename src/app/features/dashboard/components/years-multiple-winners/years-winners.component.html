@@ -1,0 +1,21 @@
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+            <th>Year</th>
+            <th>Win Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (loading) {
+            <tr>
+                <td colspan="2" class="text-center">Loading...</td>
+            </tr>
+        }
+        @for (year of years; track year.year) {
+        <tr>
+            <td>{{ year.year }}</td>
+            <td>{{ year.winnerCount }}</td>
+        </tr>
+        }
+    </tbody>
+</table>

@@ -8,6 +8,7 @@ export interface Movie {
 }
 
 export interface MovieResponse {
+  id?: number;
   year: number;
   title: string;
   studios: string[];

@@ -84,7 +84,7 @@ describe('MovieService', () => {
 
     it('should accept parameters', () => {
       const params: IntervalWinParams = {
-        projection: 'max-min-win-interval-for-producer'
+        projection: 'max-min-win-interval-for-producers'
       };
       expect(() => service.getIntervalWin(params)).not.toThrow();
     });

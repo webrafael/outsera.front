@@ -12,7 +12,7 @@ import { Years, YearsParams } from '../models/years.model';
 export class MoviesMockService {
 
   private movies = signal<Movie[]>([]);
-  
+
   constructor(private http: HttpClient) {}
 
   // Ler o arquivo CSV dos assets
@@ -39,7 +39,7 @@ export class MoviesMockService {
       const values = line.split(';').map(value => value.trim());
 
       movie['id'] = id++;
-      
+
       headers.forEach((header, index) => {
         const value = values[index] || '';
         // Converter tipos baseado no header
@@ -73,19 +73,19 @@ export class MoviesMockService {
     }
 
     if (params.title) {
-      filtered = filtered.filter(movie => 
+      filtered = filtered.filter(movie =>
         movie.title.toLowerCase().includes(params.title!.toLowerCase())
       );
     }
 
     if (params.studios) {
-      filtered = filtered.filter(movie => 
+      filtered = filtered.filter(movie =>
         movie.studios.toLowerCase().includes(params.studios!.toLowerCase())
       );
     }
 
     if (params.producers) {
-      filtered = filtered.filter(movie => 
+      filtered = filtered.filter(movie =>
         movie.producers.toLowerCase().includes(params.producers!.toLowerCase())
       );
     }
@@ -99,18 +99,18 @@ export class MoviesMockService {
       map(movies => {
         // Aplicar filtros
         let filteredMovies = this.applyFilters(movies, params);
-        
+
         // Aplicar paginação
         const page = params.page || 0;
         const size = params.size || 10;
         const totalElements = filteredMovies.length;
         const totalPages = Math.ceil(totalElements / size);
-        
+
         // Validar se a página solicitada existe
         const validPage = Math.min(page, Math.max(0, totalPages - 1));
         const startIndex = validPage * size;
         const endIndex = Math.min(startIndex + size, totalElements);
-        
+
         // Garantir que não tentamos acessar índices fora do array
         const content = filteredMovies.slice(startIndex, endIndex);
 
@@ -135,7 +135,7 @@ export class MoviesMockService {
             size
           };
         }
-        
+
         return {
           content: content.map(movie => ({
             year: movie.year,
@@ -185,7 +185,7 @@ export class MoviesMockService {
 
             return acc;
         }, {} as Record<number, string[]>);
-        
+
         return Object.entries(groupedByYear).map(([year, producers]) => ({
             year: parseInt(year),
             winnerCount: producers.length
@@ -225,7 +225,7 @@ export class MoviesMockService {
   getIntervalWin(params: IntervalWinParams): Observable<IntervalWin> {
     return of(this.movies()).pipe(
       map(movies => {
-        if (params.projection !== 'max-min-win-interval-for-producer') {
+        if (params.projection !== 'max-min-win-interval-for-producers') {
           throw new Error('Invalid projection');
         }
 
