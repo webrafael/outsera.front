@@ -21,7 +21,7 @@ export class MovieService {
 
   private intervalWinCache = new Map<string, Observable<IntervalWin>>();
 
-  getMovies(params: MovieQueryParams = {}): Observable<MoviePageResponse> {
+  getMovies(params: Partial<MovieQueryParams> = {}): Observable<MoviePageResponse> {
     const queryParams = new HttpParams({ fromObject: params as any });
     return this.http.get<MoviePageResponse>(this.moviesPath, { params: queryParams });
   }

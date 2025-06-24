@@ -1,0 +1,46 @@
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    max-width: 500px !important;
+    table {
+      width: 700px !important;
+    }
+  }
+}
+
+.custom-table-scroll {
+  width: 100%;
+}
+
+
+.custom-pagination {
+
+}
+
+.custom-pagination .page-item .page-link {
+  background-color: #e9ecef; // cinza claro (secondary-bg-subtle)
+  color: #495057;            // texto escuro
+  border: 1px solid #dee2e6; // borda cinza
+  transition: background 0.2s, color 0.2s;
+}
+
+.custom-pagination .page-item.active .page-link {
+  background-color: #0d6efd; // azul Bootstrap (primary)
+  color: #fff;
+  border-color: #0d6efd;
+}
+
+.custom-pagination .page-item .page-link:focus,
+.custom-pagination .page-item .page-link:hover {
+  background-color: #ced4da; // cinza um pouco mais escuro no hover
+  color: #212529;
+  border-color: #adb5bd;
+}
+
+.custom-pagination .page-item.disabled .page-link {
+  background-color: #f8f9fa; // mais claro para disabled
+  color: #adb5bd;
+  border-color: #dee2e6;
+  cursor: not-allowed;
+}
