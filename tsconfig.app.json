@@ -24,7 +24,7 @@
   },
   "include": [
     "src/**/*.ts"
-  ],
+, "cypress/e2e/movies.component.cy.ts"  ],
   "exclude": [
     "src/**/*.spec.ts"
   ],
