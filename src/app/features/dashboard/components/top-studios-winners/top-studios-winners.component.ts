@@ -32,9 +32,15 @@ export class TopStudiosWinnersComponent implements OnInit {
           takeUntilDestroyed(this.destroyRef),
           finalize(() => this.loading = false)
         )
-        .subscribe((response) => {
-          // filtrar pelo top 3
-          this.studios = { studios: response.studios.sort((a, b) => b.winCount - a.winCount).slice(0, 3) };
-        })
+        .subscribe({
+          next: (response) => {
+            // filtrar pelo top 3
+            this.studios = { studios: response.studios.sort((a, b) => b.winCount - a.winCount).slice(0, 3) };
+          },
+          error: (error) => {
+            console.error('Erro ao carregar estúdios:', error);
+            this.studios = { studios: [] };
+          }
+        });
   }
 }
