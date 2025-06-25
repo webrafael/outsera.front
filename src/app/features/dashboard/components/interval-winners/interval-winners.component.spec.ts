@@ -9,6 +9,11 @@ import { IntervalWin } from '@shared/models/interval-win.model';
 import { MovieService } from '@shared/services/movies/movie.service';
 import { IntervalWinnersComponent } from './interval-winners.component';
 
+/**
+ * @author @rafael-andrade
+ * @description Os testes abordados aqui foram construidos de formas simples e objetivas.
+ */
+
 describe('IntervalWinnersComponent', () => {
   let component: IntervalWinnersComponent;
   let fixture: ComponentFixture<IntervalWinnersComponent>;
