@@ -1,0 +1,57 @@
+<div class="card mt-5">
+  <div class="card-body">
+    <h4 class="card-title mb-3">List movies</h4>
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped mb-0">
+        <thead>
+          <tr>
+            <th style="width: 60px;">ID</th>
+            <th style="width: 180px;">
+              <input type="text" class="form-control" placeholder="Filter by year" [(ngModel)]="filterYear" (keyup)="validateInput($event)" (keyup.enter)="makeMoviesTable()">
+            </th>
+            <th>Title</th>
+            <th style="width: 180px;">
+              <select class="form-select" [(ngModel)]="filterWinner" (change)="makeMoviesTable()">
+                <option [selected]="filterWinner === true" value="true">Yes</option>
+                <option [selected]="filterWinner === false" value="false">No</option>
+                <option [selected]="filterWinner === null" value="">Yes/No</option>
+              </select>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (movie of movies?.content; track movie.id) {
+          <tr>
+            <td>{{ movie.id }}</td>
+            <td>{{ movie.year }}</td>
+            <td>{{ movie.title }}</td>
+            <td>{{ movie.winner ? 'Yes' : 'No' }}</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <!-- Paginação Bootstrap simples -->
+    <nav class="mt-2 d-flex justify-content-center">
+      <ul class="pagination pagination-secondary mb-0 custom-pagination">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPage(0)" aria-label="First">&laquo;</button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPage(currentPage - 1)" aria-label="Previous">&lsaquo;</button>
+        </li>
+        @for (page of pages; track page) {
+          <li class="page-item" [class.active]="page === currentPage">
+            <button class="page-link" (click)="goToPage(page)">{{ page+1 }}</button>
+          </li>
+        }
+        <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+          <button class="page-link" (click)="goToPage(currentPage + 1)" aria-label="Next">&rsaquo;</button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToPage(totalPages - 1)" aria-label="Last">&raquo;</button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

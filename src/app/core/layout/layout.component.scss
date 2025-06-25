@@ -1,0 +1,19 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+}
+
+.wrapper-content {
+    display: flex;
+    height: calc(100vh - 50px);
+    width: 100vw;
+    flex-direction: row;
+    
+    .wrapper-content__body {
+        flex: 1;
+        align-items: start;
+        height: calc(100vh - 50px);
+    }
+}

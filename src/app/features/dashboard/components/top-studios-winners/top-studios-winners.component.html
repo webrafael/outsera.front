@@ -1,0 +1,21 @@
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Win Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (loading) {
+            <tr>
+                <td colspan="2" class="text-center">Loading...</td>
+            </tr>
+        }
+        @for (studio of studios.studios; track studio.name) {
+        <tr>
+            <td>{{ studio.name }}</td>
+            <td>{{ studio.winCount }}</td>
+        </tr>
+        }
+    </tbody>
+</table>

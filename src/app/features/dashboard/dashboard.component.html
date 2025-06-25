@@ -1,0 +1,43 @@
+<div class="container-fluid mt-3">
+    <div class="row">
+        <!-- Card 1 -->
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">List years with multiple winners</h5>
+                    <app-years-multiple-winners />
+                </div>
+            </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Top 3 studios with winners</h5>
+                    <app-top-studios-winners />
+                </div>
+            </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Producers with longest and shortest interval between wins</h5>
+                    <h6>Maximum</h6>
+                    <app-interval-winners interval="max" />
+                    <h6>Minimum</h6>
+                    <app-interval-winners interval="min" />
+                </div>
+            </div>
+        </div>
+        <!-- Card 4 -->
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">List movie winners by year</h5>
+                    <app-movies-by-year />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

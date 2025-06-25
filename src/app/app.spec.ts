@@ -1,10 +1,18 @@
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
+import { appConfig } from './app.config';
+import { MoviesMockService } from './shared/mock/movies.mock.service';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [
+        ...appConfig.providers,
+        provideHttpClient(withFetch()),
+        MoviesMockService
+      ]
     }).compileComponents();
   });
 
@@ -14,10 +22,12 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', () => {
+  it('should initialize movies service', () => {
     const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, outsera.front');
+    const app = fixture.componentInstance;
+    const moviesService = TestBed.inject(MoviesMockService);
+    
+    expect(moviesService).toBeTruthy();
+    expect(app).toBeTruthy();
   });
 });
