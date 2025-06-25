@@ -1,59 +1,130 @@
-# OutseraFront
+# Outsera Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.0.3.
+Projeto Angular para o frontend da aplicação Outsera.
 
-## Development server
+## Pré-requisitos
 
-To start a local development server, run:
+- Docker
+- Docker Compose
 
-```bash
-ng serve
-```
+## Como executar o projeto
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### 1. Usando Docker Compose (Recomendado)
 
 ```bash
-ng generate component component-name
+# Construir e iniciar o container
+docker-compose up --build
+
+# Para rodar em background
+docker-compose up -d --build
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+O projeto estará disponível em: http://localhost:4200
+
+### 2. Usando Docker diretamente
 
 ```bash
-ng generate --help
+# Construir a imagem
+docker build -t outsera-front .
+
+# Executar o container
+docker run -p 4200:4200 -v $(pwd):/app -v /app/node_modules outsera-front
 ```
 
-## Building
+## Como executar os testes unitários
 
-To build the project run:
+### Opção 1: Usando o script automatizado
 
 ```bash
-ng build
+# Dar permissão de execução (apenas na primeira vez)
+chmod +x docker-test.sh
+
+# Executar os testes
+./docker-test.sh
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### Opção 2: Comandos manuais
 
 ```bash
-ng test
+# Se o container já estiver rodando
+docker exec outsera-front npm test
+
+# Se o container não estiver rodando
+docker-compose up -d
+docker exec outsera-front npm test
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+### Opção 3: Executar testes em modo watch
 
 ```bash
-ng e2e
+# Executar testes em modo watch (para desenvolvimento)
+docker exec -it outsera-front npm test -- --watch
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Comandos úteis
 
-## Additional Resources
+```bash
+# Parar o container
+docker-compose down
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+# Ver logs do container
+docker-compose logs -f
+
+# Acessar o terminal do container
+docker exec -it outsera-front sh
+
+# Reconstruir a imagem (após mudanças no Dockerfile)
+docker-compose up --build
+
+# Limpar containers e imagens não utilizadas
+docker system prune -a
+```
+
+## Estrutura do projeto
+
+```
+src/
+├── app/
+│   ├── core/
+│   │   └── layout/
+│   ├── features/
+│   │   ├── dashboard/
+│   │   └── movies/
+│   └── shared/
+│       ├── models/
+│       └── services/
+├── assets/
+└── environments/
+```
+
+## Tecnologias utilizadas
+
+- Angular 20
+- Node.js 22.16.0
+- Bootstrap 5
+- Jasmine/Karma para testes
+- Docker
+
+## Desenvolvimento
+
+O projeto está configurado com hot-reload, então as mudanças no código serão refletidas automaticamente no navegador.
+
+Para desenvolvimento local sem Docker, você pode:
+
+```bash
+# Instalar dependências
+npm install
+
+# Executar o projeto
+npm start
+
+# Executar testes
+npm test
+```
+
+## Notas importantes
+
+- O projeto usa Node.js 22.16.0
+- A porta padrão é 4200
+- Os testes unitários usam Jasmine/Karma
+- O Cypress foi removido conforme solicitado

@@ -1,0 +1,20 @@
+services:
+  outsera-front:
+    build: .
+    container_name: outsera-front
+    ports:
+      - "4200:4200"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - NG_CLI_ANALYTICS=ci
+    stdin_open: true
+    tty: true
+    networks:
+      - outsera-network
+
+networks:
+  outsera-network:
+    driver: bridge
