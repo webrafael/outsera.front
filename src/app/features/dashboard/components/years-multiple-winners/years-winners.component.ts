@@ -31,8 +31,14 @@ export class YearsMultipleWinnersComponent implements OnInit {
           takeUntilDestroyed(this.destroyRef),
           finalize(() => this.loading = false)
         )
-        .subscribe((response) => {
-          this.years = response.years;
+        .subscribe({
+          next: (response) => {
+            this.years = response.years;
+          },
+          error: (error) => {
+            console.error('Erro ao carregar anos:', error);
+            this.years = [];
+          }
         });
   }
 }
