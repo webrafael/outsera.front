@@ -51,8 +51,14 @@ export class MoviesByYearComponent implements OnInit {
           takeUntilDestroyed(this.destroyRef),
           finalize(() => this.loading = false)
         )
-        .subscribe((movies) => {
-          this.movies = movies;
+        .subscribe({
+          next: (movies) => {
+            this.movies = movies;
+          },
+          error: (error) => {
+            console.error('Erro ao buscar filmes:', error);
+            this.movies = [];
+          }
         });
   }
 
