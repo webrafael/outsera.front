@@ -59,10 +59,19 @@ export class MoviesComponent implements OnInit {
     }
     this.movieService
         .getMovies(params)
-        .subscribe((movies) => {
-          this.movies = movies;
-          this.totalPages = movies.totalPages;
-          this.pages = Array.from({ length: this.totalPages }, (_, i) => i);
+        .subscribe({
+          next: (movies) => {
+            this.movies = movies;
+            this.totalPages = movies.totalPages;
+            this.pages = Array.from({ length: this.totalPages }, (_, i) => i);
+          },
+          error: (error) => {
+            console.error('Erro ao carregar filmes:', error);
+            // Em caso de erro, mantém o estado atual ou define valores padrão
+            this.movies = undefined;
+            this.totalPages = 1;
+            this.pages = [];
+          }
         });
   }
 
