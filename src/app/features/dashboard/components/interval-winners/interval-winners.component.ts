@@ -1,25 +1,25 @@
-import { Component, DestroyRef, inject, input } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 
-import { IntervalWinProducer } from '@shared/models/interval-win.model';
+import { IntervalWin } from '@shared/models/interval-win.model';
+
 import { MovieService } from '@shared/services/movies/movie.service';
+import { IntervalWinnersTableComponent } from './interval-winners-table/interval-winners-table.component';
 
 @Component({
   selector: 'app-interval-winners',
-  imports: [],
+  imports: [IntervalWinnersTableComponent],
   templateUrl: './interval-winners.component.html',
   styleUrl: './interval-winners.component.scss'
 })
 export class IntervalWinnersComponent {
 
-  public interval = input<'max' | 'min'>('max');
-
-  private movieService = inject(MovieService);
   private destroyRef = inject(DestroyRef);
+  private movieService = inject(MovieService);
 
   public loading = false;
-  public IntervalWinProducer: IntervalWinProducer[] = [];
+  public IntervalWinProducer?: IntervalWin;
 
   ngOnInit(): void {
     this.makeIntervalWinnersTable();
@@ -33,8 +33,6 @@ export class IntervalWinnersComponent {
           takeUntilDestroyed(this.destroyRef),
           finalize(() => this.loading = false)
         )
-        .subscribe((response) => {
-          this.IntervalWinProducer = response[this.interval()];
-        })
+        .subscribe((response) => this.IntervalWinProducer = response)
   }
 }

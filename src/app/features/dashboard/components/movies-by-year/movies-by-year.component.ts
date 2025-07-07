@@ -12,28 +12,28 @@ import { debounceTime, distinctUntilChanged, finalize, Subject } from 'rxjs';
 })
 export class MoviesByYearComponent implements OnInit {
 
-  public loading = false;
-
   private destroyRef = inject(DestroyRef);
-
+  private movieService = inject(MovieService);
   private executeSearch = new Subject<string>();
 
-  private movieService = inject(MovieService);
-
-  public currentYear = new Date().getFullYear();
-
+  public loading = false;
   public movies?: MovieResponse[];
+  public currentYear = new Date().getFullYear();
 
   ngOnInit(): void {
     this.listenToSearch();
   }
 
   private listenToSearch() {
-    this.executeSearch.pipe(
-      debounceTime(1000),
-      distinctUntilChanged(),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe((value) => this.executeSearchFn(value));
+    this.executeSearch
+        .pipe(
+          debounceTime(1000),
+          distinctUntilChanged(),
+          takeUntilDestroyed(this.destroyRef)
+        )
+        .subscribe(
+          (value) => this.executeSearchFn(value)
+        );
   }
 
   private executeSearchFn(value?: string) {
@@ -56,8 +56,8 @@ export class MoviesByYearComponent implements OnInit {
             this.movies = movies;
           },
           error: (error) => {
-            console.error('Erro ao buscar filmes:', error);
             this.movies = [];
+            console.error('Erro ao buscar filmes:', error);
           }
         });
   }
