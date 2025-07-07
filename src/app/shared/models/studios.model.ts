@@ -1,12 +1,12 @@
 export interface Studios {
-    studios: StudioWinner[];
+  studios: StudioWinner[];
 }
 
 export interface StudioWinner {
-    name: string;
-    winCount: number;
+  name: string;
+  winCount: number;
 }
 
 export interface StudiosParams {
-    projection: 'studios-with-win-count';
+  projection: 'studios-with-win-count';
 }

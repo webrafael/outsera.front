@@ -4,5 +4,5 @@ export interface Years {
 }
 
 export interface YearsParams {
-    projection: 'years-with-multiple-winners';
+  projection: 'years-with-multiple-winners';
 }
