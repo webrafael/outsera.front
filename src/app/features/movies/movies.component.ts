@@ -1,8 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { MoviePageResponse, MovieQueryParams } from '@shared/models/movie.model';
-import { MovieService } from '@shared/services/movies/movie.service';
 
 import { FormsModule } from '@angular/forms';
+import { MovieService } from '@shared/services/movies/movie.service';
 
 @Component({
   selector: 'app-movies',
@@ -12,19 +12,16 @@ import { FormsModule } from '@angular/forms';
 })
 export class MoviesComponent implements OnInit {
 
-  public movies?: MoviePageResponse;
-
   private movieService = inject(MovieService);
 
-  filterYear?: number;
-  filterWinner: boolean = true;
-
-  currentYear = new Date().getFullYear();
-  currentPage: number = 0;
-  totalPages: number = 1;
-  pageSize: number = 0;
-  pages: number[] = [];
-
+  public pages: number[] = [];
+  public pageSize: number = 0;
+  public totalPages: number = 1;
+  public currentPage: number = 0;
+  public movies?: MoviePageResponse;
+  public currentYear = new Date().getFullYear();
+  public filterYear?: number;
+  public filterWinner: boolean = true;
 
   ngOnInit(): void {
     this.makeMoviesTable();
