@@ -1,5 +1,5 @@
 export const environment = {
-    apiURL: 'https://challenge.outsera.tech/api',
+    apiURL: 'https://challenge-old.outsera.tech/api',
     paths: {
         movies: '/movies'
     }
