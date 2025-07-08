@@ -20,21 +20,13 @@
           </tr>
         </thead>
         <tbody>
-          @if (loading) {
-            <tr>
-              <td colspan="4" class="text-center">Loading...</td>
-            </tr>
-          }
-
-          @if (!loading) {
-            @for (movie of movies?.content; track movie.id) {
-            <tr>
-              <td>{{ movie.id }}</td>
-              <td>{{ movie.year }}</td>
-              <td>{{ movie.title }}</td>
-              <td>{{ movie.winner ? 'Yes' : 'No' }}</td>
-            </tr>
-            }
+          @for (movie of movies?.content; track movie.id) {
+          <tr>
+            <td>{{ movie.id }}</td>
+            <td>{{ movie.year }}</td>
+            <td>{{ movie.title }}</td>
+            <td>{{ movie.winner ? 'Yes' : 'No' }}</td>
+          </tr>
           }
         </tbody>
       </table>
@@ -43,21 +35,21 @@
     <nav class="mt-2 d-flex justify-content-center">
       <ul class="pagination pagination-secondary mb-0 custom-pagination">
         <li class="page-item" [class.disabled]="currentPage === 0">
-          <button class="page-link" (click)="goToPage(0)" aria-label="First">&laquo;</button>
+          <button class="page-link" (click)="goToPage(0)" aria-label="First" [disabled]="loading">&laquo;</button>
         </li>
         <li class="page-item" [class.disabled]="currentPage === 0">
-          <button class="page-link" (click)="goToPage(currentPage - 1)" aria-label="Previous">&lsaquo;</button>
+          <button class="page-link" (click)="goToPage(currentPage - 1)" aria-label="Previous" [disabled]="loading">&lsaquo;</button>
         </li>
         @for (page of pages; track page) {
           <li class="page-item" [class.active]="page === currentPage">
-            <button class="page-link" (click)="goToPage(page)">{{ page+1 }}</button>
+            <button class="page-link" (click)="goToPage(page)" [disabled]="loading">{{ page+1 }}</button>
           </li>
         }
         <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
-          <button class="page-link" (click)="goToPage(currentPage + 1)" aria-label="Next">&rsaquo;</button>
+          <button class="page-link" (click)="goToPage(currentPage + 1)" aria-label="Next" [disabled]="loading">&rsaquo;</button>
         </li>
         <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
-          <button class="page-link" (click)="goToPage(totalPages - 1)" aria-label="Last">&raquo;</button>
+          <button class="page-link" (click)="goToPage(totalPages - 1)" aria-label="Last" [disabled]="loading">&raquo;</button>
         </li>
       </ul>
     </nav>
