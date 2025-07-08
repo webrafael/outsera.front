@@ -7,6 +7,57 @@ Projeto Angular para o frontend da aplicação Outsera.
 - Docker
 - Docker Compose
 
+## Arquitetura
+
+Escolhi esta arquitetura simulando como se fosse desenvolver um projeto real pronto para ser escalado pensando não só no tamanho do projeto como pensando também em escala de equipes separadas trabalhando por squads. Deixei uma breve explicação do que se trata cada camada para deixar um entendimento melhor.
+
+Este projeto segue a arquitetura **Vertical Slice**, uma abordagem que organiza o código por funcionalidades de negócio em vez de por camadas técnicas. Esta arquitetura promove melhor coesão, reduz acoplamento e facilita a manutenção do código.
+
+### Estrutura da Arquitetura
+
+```
+src/app/
+├── core/           # Regras de negócio e lógica central
+├── features/       # Design e componentes (dumb/smart)
+└── shared/         # Serviços e recursos compartilhados
+```
+
+### Camadas e Responsabilidades
+
+#### **Core** - Regras de Negócio
+- **Propósito**: Contém toda a lógica de negócio da aplicação
+- **Responsabilidades**:
+  - Implementação das regras de negócio
+  - Validações de dados
+  - Lógica de processamento
+  - Entidades e modelos de domínio
+  - Casos de uso da aplicação
+  - Interceptors, Pipes, Directives (Separados por grupos de regras de negócio)
+
+#### **Features** - Design e Componentes
+- **Propósito**: Interface do usuário e componentes visuais
+- **Responsabilidades**:
+  - **Smart Components**: Componentes que contêm lógica de estado e comunicação com serviços
+  - **Dumb Components**: Componentes puramente apresentacionais, sem lógica de negócio
+  - Templates e estilos específicos de cada funcionalidade
+  - Componentes reutilizáveis dentro de uma feature
+
+#### **Shared** - Recursos Compartilhados
+- **Propósito**: Serviços e recursos utilizados por múltiplas features
+- **Responsabilidades**:
+  - **Serviços Compartilhados**: APIs, autenticação, logging, etc.
+  - **Modelos Compartilhados**: Interfaces e tipos utilizados globalmente
+  - **Utilitários**: Funções helper e constantes
+  - **Recursos Globais**: Interceptors, Pipes, Directives (Genéricos que podem ser compartilhados pela aplicação inteira)
+
+### Benefícios da Arquitetura Vertical Slice
+
+- **Coesão**: Código relacionado fica junto
+- **Manutenibilidade**: Mudanças em uma funcionalidade ficam isoladas
+- **Escalabilidade**: Fácil adição de novas features
+- **Testabilidade**: Testes mais focados e organizados
+- **Clareza**: Estrutura mais intuitiva para novos desenvolvedores
+
 ## Como executar o projeto
 
 ### 1. Usando Docker Compose (Recomendado)
