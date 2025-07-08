@@ -7,11 +7,11 @@
           <tr>
             <th style="width: 60px;">ID</th>
             <th style="width: 180px;">
-              <input type="text" class="form-control" placeholder="Filter by year" [(ngModel)]="filterYear" (keyup)="validateInput($event)" (keyup.enter)="makeMoviesTable()">
+              <input type="text" class="form-control" placeholder="Filter by year" [(ngModel)]="filterYear" (blur)="onChangeWinner($event)" (keyup)="validateInput($event)" (keyup.enter)="onChangeWinner($event)">
             </th>
             <th>Title</th>
             <th style="width: 180px;">
-              <select class="form-select" [(ngModel)]="filterWinner" (change)="makeMoviesTable()">
+              <select class="form-select" [(ngModel)]="filterWinner" (change)="onChangeYear($event)">
                 <option [selected]="filterWinner === true" value="true">Yes</option>
                 <option [selected]="filterWinner === false" value="false">No</option>
                 <option [selected]="filterWinner === null" value="">Yes/No</option>
@@ -20,13 +20,21 @@
           </tr>
         </thead>
         <tbody>
-          @for (movie of movies?.content; track movie.id) {
-          <tr>
-            <td>{{ movie.id }}</td>
-            <td>{{ movie.year }}</td>
-            <td>{{ movie.title }}</td>
-            <td>{{ movie.winner ? 'Yes' : 'No' }}</td>
-          </tr>
+          @if (loading) {
+            <tr>
+              <td colspan="4" class="text-center">Loading...</td>
+            </tr>
+          }
+
+          @if (!loading) {
+            @for (movie of movies?.content; track movie.id) {
+            <tr>
+              <td>{{ movie.id }}</td>
+              <td>{{ movie.year }}</td>
+              <td>{{ movie.title }}</td>
+              <td>{{ movie.winner ? 'Yes' : 'No' }}</td>
+            </tr>
+            }
           }
         </tbody>
       </table>
@@ -34,10 +42,10 @@
     <!-- Paginação Bootstrap simples -->
     <nav class="mt-2 d-flex justify-content-center">
       <ul class="pagination pagination-secondary mb-0 custom-pagination">
-        <li class="page-item" [class.disabled]="currentPage === 1">
+        <li class="page-item" [class.disabled]="currentPage === 0">
           <button class="page-link" (click)="goToPage(0)" aria-label="First">&laquo;</button>
         </li>
-        <li class="page-item" [class.disabled]="currentPage === 1">
+        <li class="page-item" [class.disabled]="currentPage === 0">
           <button class="page-link" (click)="goToPage(currentPage - 1)" aria-label="Previous">&lsaquo;</button>
         </li>
         @for (page of pages; track page) {
@@ -48,7 +56,7 @@
         <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
           <button class="page-link" (click)="goToPage(currentPage + 1)" aria-label="Next">&rsaquo;</button>
         </li>
-        <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
           <button class="page-link" (click)="goToPage(totalPages - 1)" aria-label="Last">&raquo;</button>
         </li>
       </ul>
