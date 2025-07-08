@@ -9,9 +9,9 @@ import { YearsMultipleWinnersComponent } from './components/years-multiple-winne
   selector: 'app-dashboard',
   imports: [
     MoviesByYearComponent,
-    YearsMultipleWinnersComponent,
-    TopStudiosWinnersComponent,
     IntervalWinnersComponent,
+    TopStudiosWinnersComponent,
+    YearsMultipleWinnersComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'

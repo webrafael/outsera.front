@@ -13,11 +13,10 @@ import { MovieService } from '@shared/services/movies/movie.service';
 })
 export class TopStudiosWinnersComponent implements OnInit {
 
-  public loading = false;
-
-  private movieService = inject(MovieService);
   private destroyRef = inject(DestroyRef);
+  private movieService = inject(MovieService);
 
+  public loading = false;
   public studios: Studios = { studios: [] };
 
   ngOnInit(): void {
@@ -35,7 +34,9 @@ export class TopStudiosWinnersComponent implements OnInit {
         .subscribe({
           next: (response) => {
             // filtrar pelo top 3
-            this.studios = { studios: response.studios.sort((a, b) => b.winCount - a.winCount).slice(0, 3) };
+            this.studios = {
+              studios: response.studios.sort((a, b) => b.winCount - a.winCount).slice(0, 3)
+            };
           },
           error: (error) => {
             console.error('Erro ao carregar estúdios:', error);

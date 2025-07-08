@@ -1,6 +1,6 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, shareReplay } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { environment } from '@environments/environment';
 
@@ -19,36 +19,24 @@ export class MovieService {
 
   private http = inject(HttpClient);
 
-  private intervalWinCache = new Map<string, Observable<IntervalWin>>();
-
-  getMovies(params: Partial<MovieQueryParams> = {}): Observable<MoviePageResponse> {
-    const queryParams = new HttpParams({ fromObject: params as any });
-    return this.http.get<MoviePageResponse>(this.moviesPath, { params: queryParams });
+  getMovies(params: MovieQueryParams): Observable<MoviePageResponse> {
+    return this.http.get<MoviePageResponse>(this.moviesPath, { params: { ...params } });
   }
 
   getYearsWithMultipleWinners(params: YearsParams): Observable<{ years: Years[] }> {
-    const queryParams = new HttpParams({ fromObject: params as any });
-    return this.http.get<{ years: Years[] }>(`${this.moviesPath}`, { params: queryParams });
+    return this.http.get<{ years: Years[] }>(`${this.moviesPath}`, { params: { ...params } });
   }
 
   getStudios(params: StudiosParams): Observable<Studios> {
-    const queryParams = new HttpParams({ fromObject: params as any });
-    return this.http.get<Studios>(`${this.moviesPath}`, { params: queryParams });
+    return this.http.get<Studios>(`${this.moviesPath}`, { params: { ...params } });
   }
 
   // cache para evitar requisições repetidas
   getIntervalWin(params: IntervalWinParams): Observable<IntervalWin> {
-    const cacheKey = params.projection;
-    if (!this.intervalWinCache.has(cacheKey)) {
-      const queryParams = new HttpParams({ fromObject: params as any });
-      const obs$ = this.http.get<IntervalWin>(`${this.moviesPath}`, { params: queryParams }).pipe(shareReplay(1));
-      this.intervalWinCache.set(cacheKey, obs$);
-    }
-    return this.intervalWinCache.get(cacheKey)!;
+    return this.http.get<IntervalWin>(`${this.moviesPath}`, { params: { ...params } });
   }
 
   getMovieByYear(params: MovieByYearParams): Observable<MovieResponse[]> {
-    const queryParams = new HttpParams({ fromObject: params as any });
-    return this.http.get<MovieResponse[]>(`${this.moviesPath}`, { params: queryParams });
+    return this.http.get<MovieResponse[]>(`${this.moviesPath}`, { params: { ...params } });
   }
 }

@@ -10,10 +10,12 @@
     height: calc(100vh - 50px);
     width: 100vw;
     flex-direction: row;
-    
+
     .wrapper-content__body {
         flex: 1;
         align-items: start;
         height: calc(100vh - 50px);
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 }

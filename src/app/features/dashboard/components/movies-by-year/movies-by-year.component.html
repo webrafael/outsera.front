@@ -1,29 +1,29 @@
 <div class="input-group mb-2">
-    <input #input type="number" class="form-control" placeholder="Search by year" [disabled]="loading" [max]="currentYear" (keyup.enter)="search(input)" (input)="validateInput($event); search(input)">
-    <button class="btn btn-outline-primary" type="button" (click)="search(input)" [disabled]="loading">
-        <i class="bi bi-search"></i>
-    </button>
+  <input #input type="number" class="form-control" placeholder="Search by year" [disabled]="loading" [max]="currentYear" (keyup.enter)="search(input)" (input)="validateInput($event); search(input)">
+  <button class="btn btn-outline-primary" type="button" (click)="search(input)" [disabled]="loading">
+    <i class="bi bi-search"></i>
+  </button>
 </div>
 <table class="table table-bordered table-striped mb-0">
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Year</th>
-            <th>Title</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (loading) {
-            <tr>
-                <td colspan="3" class="text-center">Loading...</td>
-            </tr>
-        }
-        @for (movie of movies; track movie.id) {
-            <tr>
-                <td>{{ movie.id }}</td>
-                <td>{{ movie.year }}</td>
-                <td>{{ movie.title }}</td>
-            </tr>
-        }
-    </tbody>
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Year</th>
+      <th>Title</th>
+    </tr>
+  </thead>
+  <tbody>
+    @if (loading) {
+    <tr>
+      <td colspan="3" class="text-center">Loading...</td>
+    </tr>
+    }
+    @for (movie of movies; track movie.id) {
+    <tr>
+      <td>{{ movie.id }}</td>
+      <td>{{ movie.year }}</td>
+      <td>{{ movie.title }}</td>
+    </tr>
+    }
+  </tbody>
 </table>

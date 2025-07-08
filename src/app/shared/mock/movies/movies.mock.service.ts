@@ -1,104 +1,31 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, signal } from '@angular/core';
-import { Observable, map, of } from 'rxjs';
-import { IntervalWin, IntervalWinParams, IntervalWinProducer } from '../models/interval-win.model';
-import { Movie, MovieByYearParams, MoviePageResponse, MovieQueryParams } from '../models/movie.model';
-import { Studios, StudiosParams } from '../models/studios.model';
-import { Years, YearsParams } from '../models/years.model';
+import { inject, Injectable } from '@angular/core';
+import { delay, map, Observable } from 'rxjs';
+import { IntervalWin, IntervalWinParams, IntervalWinProducer } from '../../models/interval-win.model';
+import { Movie, MovieByYearParams, MoviePageResponse, MovieQueryParams, MovieResponse } from '../../models/movie.model';
+import { Studios, StudiosParams } from '../../models/studios.model';
+import { Years, YearsParams } from '../../models/years.model';
+import { filterQueryMock, parseCsv } from './utils/movies.mock.utils';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MoviesMockService {
 
-  private movies = signal<Movie[]>([]);
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   // Ler o arquivo CSV dos assets
-  readCsvFile(): Observable<Movie[]> {
-    return this.http.get('assets/mock/movielist.csv', { responseType: 'text' })
-      .pipe(
-        map(csvText => {
-          const movies = this.parseCsv(csvText);
-          this.movies.set(movies);
-          return movies;
-        })
-      );
-  }
-
-  // Parsear o texto CSV para array de objetos tipados
-  private parseCsv(csvText: string): Movie[] {
-    const lines = csvText.split('\n').filter(line => line.trim() !== '');
-    if (lines.length === 0) return [];
-
-    let id = 1;
-    const headers = lines[0].split(';').map(header => header.trim());
-    const data = lines.slice(1).map(line => {
-      const movie: any = {};
-      const values = line.split(';').map(value => value.trim());
-
-      movie['id'] = id++;
-
-      headers.forEach((header, index) => {
-        const value = values[index] || '';
-        // Converter tipos baseado no header
-        switch (header) {
-          case 'year':
-            movie[header] = parseInt(value) || 0;
-            break;
-            case 'winner':
-              movie[header] = value.toLowerCase() === 'yes';
-              break;
-              default:
-            movie[header] = value;
-          }
-        });
-      return movie as Movie;
-    });
-
-    return data;
-  }
-
-  // Método privado para aplicar filtros
-  private applyFilters(movies: Movie[], params: MovieQueryParams): Movie[] {
-    let filtered = [...movies];
-
-    if (params.winner !== undefined) {
-      filtered = filtered.filter(movie => movie.winner === params.winner);
-    }
-
-    if (params.year !== undefined) {
-      filtered = filtered.filter(movie => movie.year === params.year);
-    }
-
-    if (params.title) {
-      filtered = filtered.filter(movie =>
-        movie.title.toLowerCase().includes(params.title!.toLowerCase())
-      );
-    }
-
-    if (params.studios) {
-      filtered = filtered.filter(movie =>
-        movie.studios.toLowerCase().includes(params.studios!.toLowerCase())
-      );
-    }
-
-    if (params.producers) {
-      filtered = filtered.filter(movie =>
-        movie.producers.toLowerCase().includes(params.producers!.toLowerCase())
-      );
-    }
-
-    return filtered;
+  private getCSV(): Observable<Movie[]> {
+    return this.http.get('assets/mock/movielist.csv', { responseType: 'text' }).pipe(map(csvText => parseCsv(csvText)), delay(1000));
   }
 
   // Método para obter filmes com paginação e filtros
   getMovies(params: MovieQueryParams = {}): Observable<MoviePageResponse> {
-    return of(this.movies()).pipe(
+    return this.getCSV()
+    .pipe(
       map(movies => {
         // Aplicar filtros
-        let filteredMovies = this.applyFilters(movies, params);
+        let filteredMovies = filterQueryMock(movies, params);
 
         // Aplicar paginação
         const page = params.page || 0;
@@ -166,8 +93,8 @@ export class MoviesMockService {
   }
 
   // Método para obter anos com mais de um vencedor
-  getYearsWithMultipleWinners(params: YearsParams): Observable<Years[]> {
-    return of(this.movies()).pipe(
+  getYearsWithMultipleWinners(params: YearsParams): Observable<{ years: Years[] }> {
+    return this.getCSV().pipe(
       map(movies => {
 
         if (params.projection !== 'years-with-multiple-winners') {
@@ -186,17 +113,21 @@ export class MoviesMockService {
             return acc;
         }, {} as Record<number, string[]>);
 
-        return Object.entries(groupedByYear).map(([year, producers]) => ({
+        const years = {
+          years: Object.entries(groupedByYear).map(([year, producers]) => ({
             year: parseInt(year),
             winnerCount: producers.length
-        }));
+          }))
+        };
+
+        return years;
       })
     )
   }
 
   // Método para obter estúdios
   getStudios(params: StudiosParams): Observable<Studios> {
-    return of(this.movies()).pipe(
+    return this.getCSV().pipe(
       map(movies => {
         if (params.projection !== 'studios-with-win-count') {
           throw new Error('Invalid projection');
@@ -223,7 +154,7 @@ export class MoviesMockService {
 
   // Método para obter o intervalo de prêmios
   getIntervalWin(params: IntervalWinParams): Observable<IntervalWin> {
-    return of(this.movies()).pipe(
+    return this.getCSV().pipe(
       map(movies => {
         if (params.projection !== 'max-min-win-interval-for-producers') {
           throw new Error('Invalid projection');
@@ -294,8 +225,8 @@ export class MoviesMockService {
   }
 
   // Método para obter o filme por ano
-  getMovieByYear(params: MovieByYearParams): Observable<Movie[]> {
-    return of(this.movies()).pipe(
+  getMovieByYear(params: MovieByYearParams): Observable<MovieResponse[]> {
+    return this.getCSV().pipe(
       map(movies => {
 
         const movie = movies.filter(movie => movie.year === params.year && movie.winner === params.winner);
@@ -304,7 +235,16 @@ export class MoviesMockService {
           return [];
         }
 
-        return movie;
+        const movieResponse: MovieResponse[] = movie.map(movie => ({
+          id: movie.id,
+          year: movie.year,
+          title: movie.title,
+          studios: movie.studios?.split(/,|\s+and\s+/)?.map((studio) => studio.trim()),
+          producers: movie.producers?.split(/,|\s+and\s+/)?.map((producer) => producer.trim()),
+          winner: movie.winner
+        }));
+
+        return movieResponse;
       })
     )
   }

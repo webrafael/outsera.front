@@ -1,25 +1,5 @@
-<table class="table table-bordered table-striped mb-3">
-    <thead>
-        <tr>
-            <th>Producer</th>
-            <th>Interval</th>
-            <th>Previous Year</th>
-            <th>Following Year</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (loading) {
-            <tr>
-                <td colspan="4" class="text-center">Loading...</td>
-            </tr>
-        }
-        @for (producer of IntervalWinProducer; track producer.producer) {
-        <tr>
-            <td>{{ producer.producer }}</td>
-            <td>{{ producer.interval }}</td>
-            <td>{{ producer.previousWin }}</td>
-            <td>{{ producer.followingWin }}</td>
-        </tr>
-        }
-    </tbody>
-</table>
+<h6>Maximum</h6>
+<app-interval-winners-table [loading]="loading" [intervalWinProducer]="IntervalWinProducer?.max ?? []" />
+
+<h6>Minimum</h6>
+<app-interval-winners-table [loading]="loading" [intervalWinProducer]="IntervalWinProducer?.min ?? []" />
