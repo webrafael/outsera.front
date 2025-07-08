@@ -63,11 +63,20 @@ export class MoviesByYearComponent implements OnInit {
   }
 
   validateInput(event: Event) {
-    // validar para digitar no máximo 4 caracteres
     const input = event.target as HTMLInputElement;
+
+    // deve aceitar somente números
+    if (isNaN(Number(input.value))) {
+      input.value = '';
+      return;
+    }
+
+    // deve aceitar no máximo 4 caracteres
     if (input.value.length > 4) {
       input.value = input.value.slice(0, 4);
     }
+
+    // Se o ano for maior que o ano atual, deve ser o ano atual
     if (Number(input.value) > this.currentYear) {
       input.value = this.currentYear.toString();
     }
