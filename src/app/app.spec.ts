@@ -2,7 +2,7 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
 import { appConfig } from './app.config';
-import { MoviesMockService } from './shared/mock/movies.mock.service';
+import { MoviesMockService } from './shared/mock/movies/movies.mock.service';
 
 describe('App', () => {
   beforeEach(async () => {
@@ -26,7 +26,7 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     const app = fixture.componentInstance;
     const moviesService = TestBed.inject(MoviesMockService);
-    
+
     expect(moviesService).toBeTruthy();
     expect(app).toBeTruthy();
   });

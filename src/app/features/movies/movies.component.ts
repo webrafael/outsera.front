@@ -36,6 +36,7 @@ export class MoviesComponent implements OnInit {
     const input = event.target as HTMLInputElement;
 
     if (input.value !== this.filterWinner?.toString()) {
+      this.filterWinner = input.value === 'true';
       this.resetPagination();
       return;
     }
@@ -48,11 +49,12 @@ export class MoviesComponent implements OnInit {
     const input = event.target as HTMLInputElement;
 
     if (input.value !== this.filterYear?.toString()) {
+      this.filterYear = input.value ? Number(input.value) : undefined;
       this.resetPagination();
       return;
     }
 
-    this.filterYear = Number(input.value);
+    this.filterYear = input.value ? Number(input.value) : undefined;
   }
 
   // TODO: refatorar teste unitário para esta função (makeMoviesTable)

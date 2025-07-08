@@ -35,15 +35,13 @@ describe('Dashboard', () => {
       // Verifica se os 4 componentes estão presentes no template
       const yearsMultipleWinners = fixture.debugElement.query(By.css('app-years-multiple-winners'));
       const topStudiosWinners = fixture.debugElement.query(By.css('app-top-studios-winners'));
-      const intervalWinnersMax = fixture.debugElement.query(By.css('app-interval-winners[interval="max"]'));
-      const intervalWinnersMin = fixture.debugElement.query(By.css('app-interval-winners[interval="min"]'));
+      const intervalWinners = fixture.debugElement.query(By.css('app-interval-winners'));
       const moviesByYear = fixture.debugElement.query(By.css('app-movies-by-year'));
 
       // Verifica se todos os componentes estão carregados
       expect(yearsMultipleWinners).toBeTruthy();
       expect(topStudiosWinners).toBeTruthy();
-      expect(intervalWinnersMax).toBeTruthy();
-      expect(intervalWinnersMin).toBeTruthy();
+      expect(intervalWinners).toBeTruthy();
       expect(moviesByYear).toBeTruthy();
     });
 

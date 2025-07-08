@@ -69,16 +69,12 @@ describe('IntervalWinnersComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('deve ter o input interval com valor padrão "max"', () => {
-      expect(component.interval()).toBe('max');
-    });
-
     it('deve ter loading inicial como false', () => {
       expect(component.loading).toBeFalse();
     });
 
-    it('deve ter IntervalWinProducer como array vazio inicialmente', () => {
-      expect(component.IntervalWinProducer).toEqual([]);
+    it('deve ter IntervalWinProducer como undefined inicialmente', () => {
+      expect(component.IntervalWinProducer).toBeUndefined();
     });
   });
 
@@ -104,7 +100,7 @@ describe('IntervalWinnersComponent', () => {
       });
 
       // Verificar que os dados foram carregados
-      expect(component.IntervalWinProducer).toEqual(mockIntervalWinData.max);
+      expect(component.IntervalWinProducer).toEqual(mockIntervalWinData);
 
       // Verificar que loading foi definido como false após carregamento
       expect(component.loading).toBeFalse();
@@ -125,7 +121,7 @@ describe('IntervalWinnersComponent', () => {
 
       component.ngOnInit();
 
-      expect(component.IntervalWinProducer).toEqual(mockIntervalWinData.max);
+      expect(component.IntervalWinProducer).toEqual(mockIntervalWinData);
     });
 
     it('deve definir loading como false após carregar dados com sucesso', (done) => {
@@ -156,7 +152,7 @@ describe('IntervalWinnersComponent', () => {
       component.ngOnInit();
 
       setTimeout(() => {
-        expect(component.IntervalWinProducer).toEqual([]);
+        expect(component.IntervalWinProducer).toBeUndefined();
         done();
       });
     });
@@ -172,11 +168,20 @@ describe('IntervalWinnersComponent', () => {
     it('deve exibir tabela com cabeçalhos corretos', () => {
       const headers = fixture.debugElement.queryAll(By.css('th'));
 
-      expect(headers.length).toBe(4);
+      // Há duas tabelas (Maximum e Minimum), cada uma com 4 cabeçalhos
+      expect(headers.length).toBe(8);
+
+      // Verifica os cabeçalhos da primeira tabela (Maximum)
       expect(headers[0].nativeElement.textContent.trim()).toBe('Producer');
       expect(headers[1].nativeElement.textContent.trim()).toBe('Interval');
       expect(headers[2].nativeElement.textContent.trim()).toBe('Previous Year');
       expect(headers[3].nativeElement.textContent.trim()).toBe('Following Year');
+
+      // Verifica os cabeçalhos da segunda tabela (Minimum)
+      expect(headers[4].nativeElement.textContent.trim()).toBe('Producer');
+      expect(headers[5].nativeElement.textContent.trim()).toBe('Interval');
+      expect(headers[6].nativeElement.textContent.trim()).toBe('Previous Year');
+      expect(headers[7].nativeElement.textContent.trim()).toBe('Following Year');
     });
 
     it('deve exibir "Loading..." quando loading é true', () => {
@@ -189,13 +194,16 @@ describe('IntervalWinnersComponent', () => {
 
     it('deve renderizar dados dos produtores corretamente', () => {
       const rows = fixture.debugElement.queryAll(By.css('tbody tr'));
-      // Remove a primeira linha se for loading
+      // Remove as linhas de loading
       const dataRows = rows.filter(row =>
         !row.query(By.css('td.text-center'))
       );
 
-      expect(dataRows.length).toBe(mockIntervalWinData.max.length);
+      // Total de linhas deve ser a soma de max + min
+      const totalExpectedRows = mockIntervalWinData.max.length + mockIntervalWinData.min.length;
+      expect(dataRows.length).toBe(totalExpectedRows);
 
+      // Verifica a primeira linha (da tabela Maximum)
       const firstRow = dataRows[0];
       const cells = firstRow.queryAll(By.css('td'));
 
@@ -211,8 +219,11 @@ describe('IntervalWinnersComponent', () => {
         !row.query(By.css('td.text-center'))
       );
 
-      expect(dataRows.length).toBe(2);
+      // Total de linhas deve ser a soma de max + min
+      const totalExpectedRows = mockIntervalWinData.max.length + mockIntervalWinData.min.length;
+      expect(dataRows.length).toBe(totalExpectedRows);
 
+      // Verifica a segunda linha (da tabela Maximum)
       const secondRow = dataRows[1];
       const cells = secondRow.queryAll(By.css('td'));
 
@@ -222,8 +233,24 @@ describe('IntervalWinnersComponent', () => {
       expect(cells[3].nativeElement.textContent.trim()).toBe('1997');
     });
 
+    it('deve renderizar dados da tabela Minimum', () => {
+      const rows = fixture.debugElement.queryAll(By.css('tbody tr'));
+      const dataRows = rows.filter(row =>
+        !row.query(By.css('td.text-center'))
+      );
+
+      // Verifica a terceira linha (da tabela Minimum)
+      const thirdRow = dataRows[2];
+      const cells = thirdRow.queryAll(By.css('td'));
+
+      expect(cells[0].nativeElement.textContent.trim()).toBe('Joel Silver');
+      expect(cells[1].nativeElement.textContent.trim()).toBe('1');
+      expect(cells[2].nativeElement.textContent.trim()).toBe('1990');
+      expect(cells[3].nativeElement.textContent.trim()).toBe('1991');
+    });
+
     it('não deve exibir dados quando IntervalWinProducer está vazio', () => {
-      component.IntervalWinProducer = [];
+      component.IntervalWinProducer = { min: [], max: [] };
       fixture.detectChanges();
 
       const dataRows = fixture.debugElement.queryAll(By.css('tbody tr'));
@@ -266,7 +293,7 @@ describe('IntervalWinnersComponent', () => {
       component.ngOnInit();
 
       setTimeout(() => {
-        expect(component.IntervalWinProducer).toEqual([]);
+        expect(component.IntervalWinProducer).toEqual(emptyResponse);
         expect(component.loading).toBeFalse();
         done();
       });
@@ -279,7 +306,7 @@ describe('IntervalWinnersComponent', () => {
       component.ngOnInit();
 
       setTimeout(() => {
-        expect(component.IntervalWinProducer).toBeNull();
+        expect(component.IntervalWinProducer).toEqual(nullResponse);
         expect(component.loading).toBeFalse();
         done();
       });
